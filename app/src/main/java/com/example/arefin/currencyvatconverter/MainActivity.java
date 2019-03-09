@@ -180,10 +180,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void onCompleteListener() {
         boundView.layoutProgressBar.setVisibility(View.GONE);
-        updateView();
-    }
-
-    private void updateView() {
         enableDisableButtons(true);
     }
 
