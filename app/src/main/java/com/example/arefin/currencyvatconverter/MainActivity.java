@@ -170,16 +170,13 @@ public class MainActivity extends AppCompatActivity {
         boundView.btnCalculate.setOnClickListener(view -> {
             try {
                 inputValue = Double.parseDouble(boundView.editTextInputCurrency.getText().toString());
-                String ratetypeJson = new Gson().toJson(rateTypesOfSelectedCountry);
-                JSONObject jsonObject = new JSONObject(ratetypeJson);
-                Double selectedTaxValue = jsonObject.optDouble(boundView.spinnerCalculationMethod.getSelectedItem().toString());
+                JSONObject validTaxRates = rateTypesOfSelectedCountry.getValidTaxRatesAsJSON();
+                Double selectedTaxValue = validTaxRates.optDouble(boundView.spinnerCalculationMethod.getSelectedItem().toString());
                 Double totalValue = inputValue + selectedTaxValue;
                 boundView.tvConvertedValue.setText(totalValue.toString());
 
             }catch (NumberFormatException e){
 
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
 
         });

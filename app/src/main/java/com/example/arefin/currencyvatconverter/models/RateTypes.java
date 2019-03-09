@@ -3,6 +3,9 @@ package com.example.arefin.currencyvatconverter.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class RateTypes {
 
     @SerializedName("super_reduced")
@@ -75,5 +78,28 @@ public class RateTypes {
 
     public void setParking(Double parking) {
         this.parking = parking;
+    }
+
+    public JSONObject getValidTaxRatesAsJSON(){
+        JSONObject jsonObject = new JSONObject();
+            try {
+                if(superReduced != null)
+                    jsonObject.put("super_reduced",superReduced);
+                if(reduced != null)
+                    jsonObject.put("reduced",reduced);
+                if(standard != null)
+                    jsonObject.put("standard",standard);
+                if(reduced1 != null)
+                    jsonObject.put("reduced1",reduced1);
+                if(reduced2 != null)
+                    jsonObject.put("reduced2",reduced2);
+                if(parking != null)
+                    jsonObject.put("parking",parking);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return new JSONObject();
+            }
+        return jsonObject;
     }
 }
