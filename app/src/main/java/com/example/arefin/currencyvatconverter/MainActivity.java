@@ -185,13 +185,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateView() {
         enableDisableButtons(true);
-        updateCountrySpinner();
-    }
-
-    private void updateCountrySpinner() {
-        //update the country chooser spinner
-//        spinnerCountryAdapter.clear();
-//        spinnerCountryAdapter.addAll(rateList);
     }
 
     private void clearTheOutput() {
