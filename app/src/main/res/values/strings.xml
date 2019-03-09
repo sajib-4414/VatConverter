@@ -5,9 +5,9 @@
     <string name="choose_calculation_method">Calculation method :</string>
     <string name="calculate_tax">Calculate </string>
     <string name="change_country">Change country : </string>
-    <string name="no_country_selected">(No country selected) </string>
-    <string name="no_method_selected">(No method selected) </string>
+    <string name="select_an_option">Select an option</string>
     <string name="please_wait_to_load_data">Please wait while we fetch the currency data</string>
     <string name="input_currency">Input currency :</string>
     <string name="internal_error_occurred">Internal error occurred. Try again</string>
+    <string name="input_value_is_required">Input currency value is required</string>
 </resources>

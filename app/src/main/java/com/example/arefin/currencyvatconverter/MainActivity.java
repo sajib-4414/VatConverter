@@ -3,6 +3,7 @@ package com.example.arefin.currencyvatconverter;
 import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -56,7 +57,14 @@ public class MainActivity extends AppCompatActivity {
         boundView = DataBindingUtil.setContentView(this, R.layout.activity_main);
         initDependencyInjections();
         rateList = new ArrayList<>();
+        enableDisableButtons(false);
         callAPi();
+    }
+
+    private void enableDisableButtons(boolean willEnable){
+            boundView.btnCalculate.setEnabled(willEnable);
+            boundView.spinnerCalculationMethod.setEnabled(willEnable);
+            boundView.spinnerCountry.setEnabled(willEnable);
     }
 
     private void callAPi() {
@@ -94,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
                 vatMap.put(rate.getName(),rate.getPeriods().get(0).getRateTypes());
                 countryList.add(rate.getName());
             }
+            countryList.add(0,getString(R.string.select_an_option));
             countryArr = new String[countryList.size()];
             countryArr = countryList.toArray(countryArr);
         }
@@ -113,11 +122,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setView() {
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>
-                (this, android.R.layout.simple_spinner_item,
-                        countryArr); //selected item will look like a spinner set from XML
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout
-                .simple_spinner_dropdown_item);
+        enableDisableButtons(true);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, countryArr); //selected item will look like a spinner set from XML
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         boundView.spinnerCountry.setAdapter(spinnerArrayAdapter);
         boundView.spinnerCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -125,13 +132,25 @@ public class MainActivity extends AppCompatActivity {
                 // your code here
                 if(rateList !=null && vatMap !=null){
                     clearTheOutput();
-                    rateTypesOfSelectedCountry = vatMap.get(countryArr[position]);
-                    ArrayList<String> methodOptionsList = vatMap.get(countryArr[position]).getValidTaxtypes();
-                    methodsArr = new String[methodOptionsList.size()];
-                    methodsArr = methodOptionsList.toArray(methodsArr);
-                    ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, methodsArr);
-                    spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    boundView.spinnerCalculationMethod.setAdapter(spinnerArrayAdapter);
+                    if( ! countryArr[position].equals(getText(R.string.select_an_option))){
+                        rateTypesOfSelectedCountry = vatMap.get(countryArr[position]);
+                        ArrayList<String> methodOptionsList = vatMap.get(countryArr[position]).getValidTaxtypes();
+                        methodOptionsList.add(0,getString(R.string.select_an_option));
+                        methodsArr = new String[methodOptionsList.size()];
+                        methodsArr = methodOptionsList.toArray(methodsArr);
+                        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, methodsArr);
+                        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        boundView.spinnerCalculationMethod.setAdapter(spinnerArrayAdapter);
+                    }
+                    else{
+                        ArrayList<String> options = new ArrayList<>();
+                        options.add(getString(R.string.select_an_option));
+                        String[] emptyArray = new String[1];
+                        emptyArray = options.toArray(emptyArray);
+                        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, emptyArray);
+                        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        boundView.spinnerCalculationMethod.setAdapter(spinnerArrayAdapter);
+                    }
                 }
             }
 
@@ -154,6 +173,10 @@ public class MainActivity extends AppCompatActivity {
         });
         boundView.btnCalculate.setOnClickListener(view -> {
             try {
+                if(TextUtils.isEmpty(boundView.editTextInputCurrency.getText())){
+                    Toast.makeText(this,getText(R.string.input_value_is_required), Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 inputValue = Double.parseDouble(boundView.editTextInputCurrency.getText().toString());
                 JSONObject validTaxRates = rateTypesOfSelectedCountry.getValidTaxRatesAsJSON();
                 Double selectedTaxValue = validTaxRates.optDouble(boundView.spinnerCalculationMethod.getSelectedItem().toString());
