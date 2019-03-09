@@ -9,4 +9,5 @@
     <string name="no_method_selected">(No method selected) </string>
     <string name="please_wait_to_load_data">Please wait while we fetch the currency data</string>
     <string name="input_currency">Input currency :</string>
+    <string name="internal_error_occurred">Internal error occurred. Try again</string>
 </resources>

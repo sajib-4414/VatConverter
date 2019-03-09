@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         boundView.layoutProgressBar.setVisibility(View.GONE);
         t.printStackTrace();
 
-        Toast.makeText(this, "ERROR IN FETCHING API RESPONSE. Try again",
+        Toast.makeText(this, getText(R.string.internal_error_occurred),
                 Toast.LENGTH_LONG).show();
     }
 
@@ -123,31 +123,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // your code here
-                clearTheOutput();
-                ArrayList<String> methodOptionsList = new ArrayList<>();
-                RateTypes rateTypes = vatMap.get(countryArr[position]);
-                rateTypesOfSelectedCountry = rateTypes;
-                if(rateTypes.getSuperReduced() != null)
-                    methodOptionsList.add("super_reduced");
-                if(rateTypes.getReduced() != null)
-                    methodOptionsList.add("reduced");
-                if(rateTypes.getStandard() != null)
-                    methodOptionsList.add("standard");
-                if(rateTypes.getReduced1() != null)
-                    methodOptionsList.add("reduced1");
-                if(rateTypes.getReduced2() != null)
-                    methodOptionsList.add("reduced2");
-                if(rateTypes.getParking() != null)
-                    methodOptionsList.add("parking");
-
-                methodsArr = new String[methodOptionsList.size()];
-                methodsArr = methodOptionsList.toArray(methodsArr);
-                ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>
-                        (getApplicationContext(), android.R.layout.simple_spinner_item,
-                                methodsArr); //selected item will look like a spinner set from XML
-                spinnerArrayAdapter.setDropDownViewResource(android.R.layout
-                        .simple_spinner_dropdown_item);
-                boundView.spinnerCalculationMethod.setAdapter(spinnerArrayAdapter);
+                if(rateList !=null && vatMap !=null){
+                    clearTheOutput();
+                    rateTypesOfSelectedCountry = vatMap.get(countryArr[position]);
+                    ArrayList<String> methodOptionsList = vatMap.get(countryArr[position]).getValidTaxtypes();
+                    methodsArr = new String[methodOptionsList.size()];
+                    methodsArr = methodOptionsList.toArray(methodsArr);
+                    ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, methodsArr);
+                    spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    boundView.spinnerCalculationMethod.setAdapter(spinnerArrayAdapter);
+                }
             }
 
             @Override

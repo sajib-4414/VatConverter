@@ -1,10 +1,14 @@
 package com.example.arefin.currencyvatconverter.models;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class RateTypes {
 
@@ -80,6 +84,18 @@ public class RateTypes {
         this.parking = parking;
     }
 
+    public ArrayList<String> getValidTaxtypes(){
+        JSONObject jsonObject = getValidTaxRatesAsJSON();
+        if(jsonObject != null && jsonObject.length() >0){
+            ArrayList<String> keysList = new ArrayList<>();
+            for(Iterator<String> iter = jsonObject.keys(); iter.hasNext();) {
+                keysList.add(iter.next());
+                iter.remove();
+            }
+            return keysList;
+        }
+        return null;
+    }
     public JSONObject getValidTaxRatesAsJSON(){
         JSONObject jsonObject = new JSONObject();
             try {
@@ -95,11 +111,11 @@ public class RateTypes {
                     jsonObject.put("reduced2",reduced2);
                 if(parking != null)
                     jsonObject.put("parking",parking);
+                return jsonObject;
 
             } catch (JSONException e) {
                 e.printStackTrace();
-                return new JSONObject();
+                return null;
             }
-        return jsonObject;
     }
 }
