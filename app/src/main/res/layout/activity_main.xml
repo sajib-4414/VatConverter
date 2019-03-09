@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:padding="@dimen/all_side_padding"
     android:orientation="vertical"
-    android:gravity="center_horizontal">
+>
     <LinearLayout
         android:id="@+id/layout_progress_bar"
         android:layout_width="wrap_content"
@@ -22,21 +22,31 @@
             android:text="@string/please_wait_to_load_data"/>
     </LinearLayout>
 
-    <TextView
+
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/background_dark"
-        android:textSize="@dimen/text_size"
-        android:text="@string/enter_amount"
-       />
-    <EditText
-        android:id="@+id/edit_text_input_currency"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
         android:layout_marginTop="@dimen/general_margin"
-        android:minWidth="@dimen/min_text_field_size"
-        />
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/background_dark"
+            android:textSize="@dimen/text_size"
+            android:layout_gravity="center_vertical"
+            android:text="@string/input_currency"
+            />
+        <EditText
+            android:id="@+id/edit_text_input_currency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+
+            android:hint="@string/enter_amount"
+            android:minWidth="@dimen/min_text_field_size"
+            />
+    </LinearLayout>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -86,16 +96,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/general_margin"
         android:orientation="horizontal">
-        <TextView
+        <Button
+            android:id="@+id/btn_calculate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/background_dark"
             android:textSize="@dimen/text_size"
-            android:text="@string/converted_value"
+            android:textAllCaps="false"
+            android:text="@string/calculate_tax"
             android:layout_marginRight="@dimen/smallest_margin"/>
         <TextView
             android:id="@+id/tv_converted_value"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@android:color/background_dark"
             android:textSize="@dimen/text_size"

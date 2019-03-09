@@ -16,6 +16,10 @@ import com.example.arefin.currencyvatconverter.models.ApiResponse;
 import com.example.arefin.currencyvatconverter.models.Rate;
 import com.example.arefin.currencyvatconverter.models.RateTypes;
 import com.example.arefin.currencyvatconverter.network.APIService;
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding boundView;
     Double inputValue;
+    RateTypes rateTypesOfSelectedCountry;
     private String[] methodsArr;
 
     @Override
@@ -118,8 +123,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // your code here
+                clearTheOutput();
                 ArrayList<String> methodOptionsList = new ArrayList<>();
                 RateTypes rateTypes = vatMap.get(countryArr[position]);
+                rateTypesOfSelectedCountry = rateTypes;
                 if(rateTypes.getSuperReduced() != null)
                     methodOptionsList.add("super_reduced");
                 if(rateTypes.getReduced() != null)
@@ -152,10 +159,7 @@ public class MainActivity extends AppCompatActivity {
         boundView.spinnerCalculationMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (methodsArr !=null){
-                    String selectedMethod = methodsArr[position];
-
-                }
+                clearTheOutput();
             }
 
             @Override
@@ -163,5 +167,26 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        boundView.btnCalculate.setOnClickListener(view -> {
+            try {
+                inputValue = Double.parseDouble(boundView.editTextInputCurrency.getText().toString());
+                String ratetypeJson = new Gson().toJson(rateTypesOfSelectedCountry);
+                JSONObject jsonObject = new JSONObject(ratetypeJson);
+                Double selectedTaxValue = jsonObject.optDouble(boundView.spinnerCalculationMethod.getSelectedItem().toString());
+                Double totalValue = inputValue + selectedTaxValue;
+                boundView.tvConvertedValue.setText(totalValue.toString());
+
+            }catch (NumberFormatException e){
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        });
     }
+
+    private void clearTheOutput() {
+        boundView.tvConvertedValue.setText("");
+    }
+
 }
