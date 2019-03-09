@@ -17,9 +17,7 @@ import com.example.arefin.currencyvatconverter.models.ApiResponse;
 import com.example.arefin.currencyvatconverter.models.Rate;
 import com.example.arefin.currencyvatconverter.models.RateTypes;
 import com.example.arefin.currencyvatconverter.network.APIService;
-import com.google.gson.Gson;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -41,14 +39,13 @@ public class MainActivity extends AppCompatActivity {
     //the component which will help dagger injection
     private RetrofitNetworkComponent retrofitNetworkComponent;
     List<Rate> rateList;
-    Map<String, RateTypes> vatMap;
-    String[] countryArr;
+    CountrySpinnerAdapter spinnerCountryAdapter;
+    ArrayAdapter<String> spinnerMethodsAdapter;
 
 
     ActivityMainBinding boundView;
     Double inputValue;
     RateTypes rateTypesOfSelectedCountry;
-    private String[] methodsArr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +53,81 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         boundView = DataBindingUtil.setContentView(this, R.layout.activity_main);
         initDependencyInjections();
-        rateList = new ArrayList<>();
-        enableDisableButtons(false);
+        initViewsAndLists();
         callAPi();
+    }
+
+    private void initViewsAndLists() {
+        //initializing the lists
+        rateList = new ArrayList<>();
+
+        //adding a default option for choosing country in country spinner
+        Rate defaultOption = new Rate();
+        defaultOption.setName(getText(R.string.select_an_option).toString());
+        rateList.add(defaultOption);
+
+        //setting the adapter for country list spinner
+        spinnerCountryAdapter = new CountrySpinnerAdapter(this, rateList,R.layout.spinner_item_view); //selected item will look like a spinner set from XML
+        boundView.spinnerCountry.setAdapter(spinnerCountryAdapter);
+
+        //setting the adapter for method list
+        spinnerMethodsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, new ArrayList<>()); //selected item will look like a spinner set from XML
+        spinnerMethodsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        boundView.spinnerCalculationMethod.setAdapter(spinnerMethodsAdapter);
+
+        //setting callbacks/listeners when a country is selected to change the contents of methods spinner
+        boundView.spinnerCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int selectedIndex, long id) {
+                clearTheOutput();
+                //i.e the default option is not selected
+                if(selectedIndex >0) updateMethodsSpinner(selectedIndex);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {}
+
+        });
+
+        //setting callbacks/listeners when a method is selected
+        boundView.spinnerCalculationMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                clearTheOutput();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        //calculate button listener
+        boundView.btnCalculate.setOnClickListener(view -> {
+            try {
+                if(TextUtils.isEmpty(boundView.editTextInputCurrency.getText())){
+                    Toast.makeText(this,getText(R.string.input_value_is_required), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                inputValue = Double.parseDouble(boundView.editTextInputCurrency.getText().toString());
+                JSONObject validTaxRates = rateTypesOfSelectedCountry.getValidTaxRatesAsJSON();
+                Double selectedTaxValue = validTaxRates.optDouble(boundView.spinnerCalculationMethod.getSelectedItem().toString());
+                Double totalValue = inputValue + selectedTaxValue;
+                boundView.tvConvertedValue.setText(totalValue.toString());
+
+            }catch (NumberFormatException e){
+
+            }
+        });
+    }
+
+    private void updateMethodsSpinner(int selectedIndex) {
+        Rate selectedRate = rateList.get(selectedIndex);
+        //get associated methods for this country
+        ArrayList<String> methodsList = new ArrayList<>(selectedRate.getPeriods().get(0).getRateTypes().getValidTaxtypes());
+        methodsList.add(0,getText(R.string.select_an_option).toString());
+        //update the methods spinner
+        spinnerMethodsAdapter.clear();
+        spinnerMethodsAdapter.addAll(methodsList);
     }
 
     private void enableDisableButtons(boolean willEnable){
@@ -68,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void callAPi() {
+        enableDisableButtons(false);
         Observable<ApiResponse> ObservableResponse = apiService.getAllRates();
         ObservableResponse
                 .subscribeOn(Schedulers.io())
@@ -86,27 +156,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onNextListener(ApiResponse apiResponse) {
-        if (apiResponse != null && apiResponse.getRates() != null ) {
+        if ( apiResponse != null && apiResponse.getRates() != null )
             rateList.addAll(apiResponse.getRates());
-            generateDataMap();
-        }
-        else
-            Toast.makeText(this, "NO RESULTS FOUND", Toast.LENGTH_LONG).show();
+
+        else Toast.makeText(this, getText(R.string.cannot_get_data), Toast.LENGTH_LONG).show();
     }
 
-    private void generateDataMap() {
-        if(rateList.size()>0){
-            vatMap = new HashMap<>();
-            ArrayList<String> countryList = new ArrayList<>();
-            for(Rate rate: rateList){
-                vatMap.put(rate.getName(),rate.getPeriods().get(0).getRateTypes());
-                countryList.add(rate.getName());
-            }
-            countryList.add(0,getString(R.string.select_an_option));
-            countryArr = new String[countryList.size()];
-            countryArr = countryList.toArray(countryArr);
-        }
-    }
 
     private void onErrorListener(Throwable t) {
         boundView.layoutProgressBar.setVisibility(View.GONE);
@@ -118,76 +173,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void onCompleteListener() {
         boundView.layoutProgressBar.setVisibility(View.GONE);
-        setView();
+        updateView();
     }
 
-    private void setView() {
+    private void updateView() {
         enableDisableButtons(true);
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, countryArr); //selected item will look like a spinner set from XML
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        boundView.spinnerCountry.setAdapter(spinnerArrayAdapter);
-        boundView.spinnerCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                // your code here
-                if(rateList !=null && vatMap !=null){
-                    clearTheOutput();
-                    if( ! countryArr[position].equals(getText(R.string.select_an_option))){
-                        rateTypesOfSelectedCountry = vatMap.get(countryArr[position]);
-                        ArrayList<String> methodOptionsList = vatMap.get(countryArr[position]).getValidTaxtypes();
-                        methodOptionsList.add(0,getString(R.string.select_an_option));
-                        methodsArr = new String[methodOptionsList.size()];
-                        methodsArr = methodOptionsList.toArray(methodsArr);
-                        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, methodsArr);
-                        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        boundView.spinnerCalculationMethod.setAdapter(spinnerArrayAdapter);
-                    }
-                    else{
-                        ArrayList<String> options = new ArrayList<>();
-                        options.add(getString(R.string.select_an_option));
-                        String[] emptyArray = new String[1];
-                        emptyArray = options.toArray(emptyArray);
-                        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, emptyArray);
-                        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        boundView.spinnerCalculationMethod.setAdapter(spinnerArrayAdapter);
-                    }
-                }
-            }
+        updateCountrySpinner();
+    }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
-            }
-
-        });
-        boundView.spinnerCalculationMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                clearTheOutput();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        boundView.btnCalculate.setOnClickListener(view -> {
-            try {
-                if(TextUtils.isEmpty(boundView.editTextInputCurrency.getText())){
-                    Toast.makeText(this,getText(R.string.input_value_is_required), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                inputValue = Double.parseDouble(boundView.editTextInputCurrency.getText().toString());
-                JSONObject validTaxRates = rateTypesOfSelectedCountry.getValidTaxRatesAsJSON();
-                Double selectedTaxValue = validTaxRates.optDouble(boundView.spinnerCalculationMethod.getSelectedItem().toString());
-                Double totalValue = inputValue + selectedTaxValue;
-                boundView.tvConvertedValue.setText(totalValue.toString());
-
-            }catch (NumberFormatException e){
-
-            }
-
-        });
+    private void updateCountrySpinner() {
+        //update the country chooser spinner
+//        spinnerCountryAdapter.clear();
+//        spinnerCountryAdapter.addAll(rateList);
     }
 
     private void clearTheOutput() {
