@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding boundView;
     Double inputValue;
-    RateTypes rateTypesOfSelectedCountry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,8 +107,16 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this,getText(R.string.input_value_is_required), Toast.LENGTH_SHORT).show();
                     return;
                 }
+                if (boundView.spinnerCountry.getSelectedItemPosition() == 0){
+                    Toast.makeText(this,getText(R.string.please_select_country_first), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (boundView.spinnerCalculationMethod.getSelectedItemPosition() == 0){
+                    Toast.makeText(this,getText(R.string.please_select_a_method), Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 inputValue = Double.parseDouble(boundView.editTextInputCurrency.getText().toString());
-                JSONObject validTaxRates = rateTypesOfSelectedCountry.getValidTaxRatesAsJSON();
+                JSONObject validTaxRates = ((Rate)boundView.spinnerCountry.getSelectedItem()).getPeriods().get(0).getRateTypes().getValidTaxRatesAsJSON();
                 Double selectedTaxValue = validTaxRates.optDouble(boundView.spinnerCalculationMethod.getSelectedItem().toString());
                 Double totalValue = inputValue + selectedTaxValue;
                 boundView.tvConvertedValue.setText(totalValue.toString());

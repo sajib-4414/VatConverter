@@ -11,4 +11,6 @@
     <string name="internal_error_occurred">Internal error occurred. Try again</string>
     <string name="input_value_is_required">Input currency value is required</string>
     <string name="cannot_get_data">Cannot get tax data. Try again later.</string>
+    <string name="please_select_country_first">Please select a country first</string>
+    <string name="please_select_a_method">Please select a calculation method</string>
 </resources>
