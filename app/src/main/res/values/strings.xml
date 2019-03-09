@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">CurrencyVatConverter</string>
+    <string name="enter_amount">Enter amount to be converted</string>
+    <string name="select_country">Select a country :</string>
+    <string name="choose_calculation_method">Choose calculation method :</string>
+    <string name="converted_value">Converted value : </string>
+    <string name="change_country">Change country : </string>
+    <string name="no_country_selected">(No country selected) </string>
+    <string name="no_method_selected">(No method selected) </string>
+    <string name="please_wait_to_load_data">Please wait while we fetch the currency data</string>
+</resources>

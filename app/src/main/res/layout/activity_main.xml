@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/all_side_padding"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+    <LinearLayout
+        android:id="@+id/layout_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/smallest_margin">
+        <ProgressBar
+            android:layout_gravity="center_horizontal"
+            android:layout_width="@dimen/standard_progress_bar_size"
+            android:layout_height="@dimen/standard_progress_bar_size" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/please_wait_to_load_data"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/background_dark"
+        android:textSize="@dimen/text_size"
+        android:text="@string/enter_amount"
+       />
+    <EditText
+        android:id="@+id/edit_text_input_currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:layout_marginTop="@dimen/general_margin"
+        android:minWidth="@dimen/min_text_field_size"
+        />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/general_margin"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_select_country"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/background_dark"
+            android:textSize="@dimen/text_size"
+            android:layout_gravity="center_vertical"
+            android:text="@string/select_country"
+            android:layout_marginRight="@dimen/smallest_margin"
+            />
+        <Spinner
+            android:id="@+id/spinner_country"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/general_margin"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_select_calculation_method"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/background_dark"
+            android:textSize="@dimen/text_size"
+            android:layout_gravity="center_vertical"
+            android:text="@string/choose_calculation_method"
+            android:layout_marginRight="@dimen/smallest_margin"/>
+        <Spinner
+            android:id="@+id/spinner_calculation_method"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/general_margin"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/background_dark"
+            android:textSize="@dimen/text_size"
+            android:text="@string/converted_value"
+            android:layout_marginRight="@dimen/smallest_margin"/>
+        <TextView
+            android:id="@+id/tv_converted_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/background_dark"
+            android:textSize="@dimen/text_size"
+            android:text=""/>
+    </LinearLayout>
+
+
+</LinearLayout>
+</layout>
