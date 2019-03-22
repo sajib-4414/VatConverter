@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 boundView.tvConvertedValue.setText(totalValue.toString());
 
             }catch (NumberFormatException e){
-
+                Toast.makeText(this,getText(R.string.valid_data),Toast.LENGTH_SHORT).show();
             }
         });
     }
